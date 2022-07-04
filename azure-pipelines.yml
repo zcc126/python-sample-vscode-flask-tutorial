@@ -3,11 +3,16 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
+# quand est-ce que ce yml sera lancé: dès qu'il y a une modification sur la branch Master
 trigger:
 - master
 
+# préciser dans quel environnement yml sera lancé (dans ce cas, ubuntu serveur la version la plus récente)
+# ubuntu-latest: une VM image
 pool:
   vmImage: ubuntu-latest
+
+# lancer les codes avec toutes les versions de python
 strategy:
   matrix:
     Python27:
@@ -19,18 +24,22 @@ strategy:
     Python37:
       python.version: '3.7'
 
+# démarrage
 steps:
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+  displayName: 'Use Python $(python.version)' # équivalent au print
 
+# lancer la commande dans l'environnement précise
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
+# install les libraries qu'on a besoins pour faire le test
 - script: |
     pip install pytest pytest-azurepipelines
     pytest
-  displayName: 'pytest'
+  displayName: 'pytest' # commande pour lancer le test unitaire
